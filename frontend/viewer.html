@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#e9f2ee">
+  <meta name="referrer" content="no-referrer">
+  <title>MedLocker | Clinic access</title>
+  <link rel="icon" href="data:,">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link rel="stylesheet" href="/css/styles.css">
+  <script type="module" src="/js/viewer.js"></script>
+</head>
+<body class="clinic">
+  <a class="skip" href="#main">Skip to content</a>
+  <header><a class="brand" href="/" translate="no">MedLocker</a></header>
+  <main id="main">
+    <p><a href="/">Back to patient portal</a></p>
+    <section class="panel clinic-entry" id="doctor-login">
+      <h1 id="doctor-title">Doctor sign-in</h1>
+      <form id="doctor-auth" method="post" action="/api/v1/auth/doctor/login" aria-describedby="status">
+        <label id="doctor-full-name" hidden>Full name <input name="fullName" autocomplete="name" maxlength="120"></label>
+        <label>Email <input name="email" type="email" autocomplete="username" required></label>
+        <div class="password-field">
+          <label for="doctor-password">Password</label>
+          <div class="password-control">
+            <input id="doctor-password" name="password" type="password" autocomplete="current-password" required>
+            <button type="button" class="quiet eye-toggle" aria-label="Show password" aria-controls="doctor-password" aria-pressed="false" data-password-toggle><span aria-hidden="true"></span></button>
+          </div>
+        </div>
+        <label id="doctor-invite" hidden>Clinic invite code
+          <input name="inviteCode" type="password" autocomplete="off" maxlength="128" aria-describedby="doctor-invite-help">
+          <small id="doctor-invite-help">Get this code from your clinic administrator.</small>
+        </label>
+        <button type="submit" id="doctor-submit">Sign in as doctor</button>
+      </form>
+      <button type="button" class="quiet" id="doctor-toggle">Create doctor account</button>
+      <button type="button" class="quiet" id="forgot">Forgot password?</button>
+      <section id="social-signin" class="social-options" hidden>
+        <h3>Use a connected account</h3>
+        <div class="provider-buttons"></div>
+      </section>
+    </section>
+    <section class="panel clinic-entry" id="entry" hidden>
+      <h1>Clinic access</h1>
+      <form id="access" method="post" action="/api/v1/share/access" aria-describedby="status">
+        <label>Six-digit PIN
+          <input name="pin" inputmode="numeric" autocomplete="off" spellcheck="false" pattern="[0-9]{6}" maxlength="6" required>
+        </label>
+        <button>Open report</button>
+      </form>
+      <button type="button" class="quiet" id="doctor-logout">Sign out</button>
+      <section id="social-connect" class="social-options" hidden>
+        <h2>Sign-in providers</h2>
+        <div class="provider-buttons"></div>
+      </section>
+    </section>
+    <p id="status" role="status" aria-live="polite"></p>
+    <section id="report" hidden aria-label="Medical report">
+      <div class="row toolbar">
+        <time id="countdown" aria-label="Time remaining"></time>
+        <button id="previous">Previous</button>
+        <span id="pages" aria-live="polite"></span>
+        <button id="next">Next</button>
+        <button id="download" type="button">Download PDF</button>
+        <button class="quiet" id="close">Back to clinic access</button>
+      </div>
+      <div class="paper"><canvas id="pdf" role="img" aria-label="PDF page"></canvas></div>
+      <p>Downloading saves a copy to this device.</p>
+      <details>
+        <summary>Page text</summary>
+        <p id="page-text"></p>
+      </details>
+    </section>
+  </main>
+</body>
+</html>

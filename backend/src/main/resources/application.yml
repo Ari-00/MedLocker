@@ -1,0 +1,59 @@
+spring:
+  config:
+    import: "optional:file:.env[.properties]"
+  datasource:
+    url: "${MEDLOCKER_DATABASE_URL:jdbc:postgresql://localhost:5432/${POSTGRES_DB}}"
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 11MB
+      file-size-threshold: 11MB
+  mvc:
+    async:
+      request-timeout: 30s
+  mail:
+    host: ${MEDLOCKER_SMTP_HOST:}
+    port: ${MEDLOCKER_SMTP_PORT:587}
+    username: ${MEDLOCKER_SMTP_USERNAME:}
+    password: ${MEDLOCKER_SMTP_PASSWORD:}
+    properties:
+      mail.smtp.auth: ${MEDLOCKER_SMTP_AUTH:true}
+      mail.smtp.starttls.enable: ${MEDLOCKER_SMTP_STARTTLS:true}
+      mail.smtp.starttls.required: ${MEDLOCKER_SMTP_STARTTLS:true}
+      mail.smtp.connectiontimeout: 5000
+      mail.smtp.timeout: 5000
+      mail.smtp.writetimeout: 5000
+server:
+  address: ${MEDLOCKER_BIND_ADDRESS:127.0.0.1}
+  error:
+    include-message: never
+  servlet:
+    session:
+      timeout: 10m
+      cookie:
+        same-site: lax
+logging:
+  structured:
+    format:
+      console: ecs
+medlocker:
+  minio:
+    endpoint: ${MEDLOCKER_MINIO_ENDPOINT:http://localhost:9000}
+    username: ${MINIO_ROOT_USER}
+    password: ${MINIO_ROOT_PASSWORD}
+    bucket: ${MEDLOCKER_MINIO_BUCKET:medlocker}
+  master-key: ${MEDLOCKER_MASTER_KEY}
+  jwt-secret: ${MEDLOCKER_JWT_SECRET}
+  pin-pepper: ${MEDLOCKER_PIN_PEPPER}
+  allowed-origin: ${MEDLOCKER_ALLOWED_ORIGIN:}
+  doctor-email: ${MEDLOCKER_DOCTOR_EMAIL:}
+  doctor-password: ${MEDLOCKER_DOCTOR_PASSWORD:}
+  doctor-name: ${MEDLOCKER_DOCTOR_NAME:Clinic Doctor}
+  doctor-invite-code: ${MEDLOCKER_DOCTOR_INVITE_CODE:}
+  mail-from: ${MEDLOCKER_MAIL_FROM:}

@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#e9f2ee">
+  <title>MedLocker | Patient vault</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/css/styles.css">
+  <script type="module" src="/js/patient.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header>
+    <a class="brand" href="/" translate="no">MedLocker</a>
+    <a href="/viewer.html">Clinic access</a>
+  </header>
+  <main id="main" class="layout">
+    <p id="portal-back" class="portal-navigation" hidden><a href="#vault">Back to my vault</a></p>
+    <section class="intro">
+      <span class="mark" aria-hidden="true">+</span>
+      <h1>Your medical<br>document vault.</h1>
+      <p>Keep your reports together and share a PDF with your care team using a 15-minute PIN.</p>
+    </section>
+    <section class="panel" id="account">
+      <h2 id="account-title">Sign in</h2>
+      <form id="auth" method="post" action="/api/v1/auth/login" aria-describedby="status">
+        <label id="name-label" hidden>Full name
+          <input name="fullName" autocomplete="name" maxlength="120">
+        </label>
+        <label>Email
+          <input name="email" type="email" autocomplete="email" maxlength="254" spellcheck="false" required>
+        </label>
+        <div class="password-field">
+          <label for="patient-password">Password</label>
+          <div class="password-control">
+            <input id="patient-password" name="password" type="password" autocomplete="current-password" required>
+            <button type="button" class="quiet eye-toggle" aria-label="Show password" aria-controls="patient-password" aria-pressed="false" data-password-toggle><span aria-hidden="true"></span></button>
+          </div>
+        </div>
+        <button id="auth-submit">Sign in</button>
+      </form>
+      <button class="quiet" id="toggle">Create an account</button>
+      <button type="button" class="quiet" id="forgot">Forgot password?</button>
+      <section id="social-signin" class="social-options" hidden>
+        <h3>Use a connected account</h3>
+        <div class="provider-buttons"></div>
+      </section>
+    </section>
+    <section class="panel" id="vault" hidden>
+      <div class="row">
+        <h2>My vault</h2>
+        <button class="quiet" id="logout">Sign out</button>
+      </div>
+      <nav class="row portal-links" aria-label="Patient portal">
+        <a href="#gallery">Photo gallery</a>
+        <a href="#profile">My profile</a>
+      </nav>
+      <form id="upload" method="post" action="/api/v1/documents/upload" enctype="multipart/form-data" aria-describedby="status">
+        <label>Report PDF
+          <input type="file" name="file" accept=".pdf,application/pdf" required aria-describedby="file-limit">
+        </label>
+        <small id="file-limit">Maximum 10&nbsp;MB</small>
+        <button>Upload PDF</button>
+      </form>
+      <h3>Documents</h3>
+      <p id="empty">Upload a report to get started.</p>
+      <ul id="documents"></ul>
+      <section id="share" class="share" hidden>
+        <h3>Clinic access PIN</h3>
+        <p id="share-file"></p>
+        <output id="pin" translate="no"></output>
+        <p id="expiry"></p>
+      </section>
+    </section>
+    <section class="panel" id="gallery" hidden>
+      <h2>Photo gallery</h2>
+      <form id="photo-upload" method="post" action="/api/v1/documents/photos" enctype="multipart/form-data">
+        <label>Choose a photo <input type="file" name="file" accept="image/jpeg,image/png" required></label>
+        <small>JPEG or PNG, up to 10&nbsp;MB</small>
+        <button>Upload photo</button>
+      </form>
+      <button type="button" id="start-camera">Open camera</button>
+      <div id="camera" hidden>
+        <video id="camera-preview" autoplay muted playsinline aria-label="Camera preview"></video>
+        <div class="row">
+          <button type="button" id="capture-photo">Take photo</button>
+          <button type="button" class="quiet" id="stop-camera">Close camera</button>
+        </div>
+      </div>
+      <p id="gallery-empty" hidden>Your uploaded photos will appear here.</p>
+      <ul id="photos" class="gallery"></ul>
+    </section>
+    <section class="panel" id="profile" hidden>
+      <h2>My profile</h2>
+      <section id="social-connect" class="social-options" hidden>
+        <h3>Sign-in providers</h3>
+        <div class="provider-buttons"></div>
+      </section>
+      <form id="profile-form" method="post" action="/api/v1/profile">
+        <label>Full name <input name="fullName" autocomplete="name" maxlength="120" required></label>
+        <label>Email <input type="email" name="email" autocomplete="email" maxlength="254" required></label>
+        <label>Date of birth <input type="date" name="dateOfBirth" autocomplete="bday"></label>
+        <label>Phone <input type="tel" name="phone" autocomplete="tel" maxlength="40"></label>
+        <label>Address <textarea name="address" autocomplete="street-address" maxlength="250"></textarea></label>
+        <label>Emergency contact <input name="emergencyContact" maxlength="160"></label>
+        <label>Allergies <textarea name="allergies" maxlength="1000"></textarea></label>
+        <button>Save profile</button>
+      </form>
+    </section>
+    <p id="status" role="status" aria-live="polite"></p>
+  </main>
+  <dialog id="document-dialog" aria-labelledby="document-title">
+    <div class="row">
+      <h2 id="document-title"></h2>
+      <button type="button" class="quiet" id="document-back">Back to vault</button>
+    </div>
+    <div id="document-toolbar" class="row" hidden>
+      <button type="button" id="document-previous">Previous</button>
+      <span id="document-pages" aria-live="polite"></span>
+      <button type="button" id="document-next">Next</button>
+      <button type="button" id="document-print">Print PDF</button>
+    </div>
+    <p id="document-status" role="status"></p>
+    <canvas id="document-canvas" aria-label="PDF page" role="img" hidden></canvas>
+    <img id="document-photo" alt="" hidden>
+  </dialog>
+  <section id="print-pages" aria-hidden="true"></section>
+</body>
+</html>
