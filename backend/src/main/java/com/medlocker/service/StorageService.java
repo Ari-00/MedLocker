@@ -12,18 +12,25 @@ public class StorageService {
     private static final int MAX_ENCRYPTED_BYTES = MAX_PDF_BYTES + 16;
     private final MinioClient client;
     private final String bucket;
+    private final boolean createBucket;
 
     public StorageService(@Value("${medlocker.minio.endpoint}") String endpoint,
                           @Value("${medlocker.minio.username}") String username,
                           @Value("${medlocker.minio.password}") String password,
-                          @Value("${medlocker.minio.bucket}") String bucket) {
-        this.client = MinioClient.builder().endpoint(endpoint).credentials(username, password).build();
+                          @Value("${medlocker.minio.bucket}") String bucket,
+                          @Value("${medlocker.minio.region}") String region,
+                          @Value("${medlocker.minio.create-bucket}") boolean createBucket) {
+        var builder = MinioClient.builder().endpoint(endpoint).credentials(username, password);
+        if (!region.isBlank()) builder.region(region);
+        this.client = builder.build();
         this.bucket = bucket;
+        this.createBucket = createBucket;
     }
 
     @PostConstruct
     void initializeBucket() throws Exception {
         if (!client.bucketExists(BucketExistsArgs.builder().bucket(bucket).build())) {
+            if (!createBucket) throw new IllegalStateException("Create the configured storage bucket before starting MedLocker.");
             client.makeBucket(MakeBucketArgs.builder().bucket(bucket).build());
         }
     }

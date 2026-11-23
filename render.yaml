@@ -1,0 +1,51 @@
+services:
+  - type: web
+    name: medlocker
+    runtime: docker
+    plan: free
+    dockerfilePath: ./docker/app/Dockerfile
+    dockerContext: .
+    healthCheckPath: /
+    envVars:
+      - key: PORT
+        value: "8080"
+      - key: SERVER_PORT
+        value: "8080"
+      - key: MEDLOCKER_BIND_ADDRESS
+        value: 0.0.0.0
+      - key: SERVER_FORWARD_HEADERS_STRATEGY
+        value: FRAMEWORK
+      - key: SERVER_SERVLET_SESSION_COOKIE_SECURE
+        value: "true"
+      - key: JAVA_TOOL_OPTIONS
+        value: "-Xmx256m -XX:+UseSerialGC"
+      - key: SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE
+        value: "3"
+      - key: SERVER_TOMCAT_THREADS_MAX
+        value: "8"
+      - key: MEDLOCKER_DATABASE_URL
+        sync: false
+      - key: POSTGRES_USER
+        sync: false
+      - key: POSTGRES_PASSWORD
+        sync: false
+      - key: MEDLOCKER_MINIO_ENDPOINT
+        sync: false
+      - key: MEDLOCKER_MINIO_REGION
+        sync: false
+      - key: MEDLOCKER_MINIO_BUCKET
+        sync: false
+      - key: MINIO_ROOT_USER
+        sync: false
+      - key: MINIO_ROOT_PASSWORD
+        sync: false
+      - key: MEDLOCKER_MINIO_CREATE_BUCKET
+        value: "false"
+      - key: MEDLOCKER_MASTER_KEY
+        generateValue: true
+      - key: MEDLOCKER_JWT_SECRET
+        generateValue: true
+      - key: MEDLOCKER_PIN_PEPPER
+        generateValue: true
+      - key: MEDLOCKER_DOCTOR_INVITE_CODE
+        generateValue: true

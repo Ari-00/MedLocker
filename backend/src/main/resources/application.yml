@@ -48,6 +48,8 @@ medlocker:
     username: ${MINIO_ROOT_USER}
     password: ${MINIO_ROOT_PASSWORD}
     bucket: ${MEDLOCKER_MINIO_BUCKET:medlocker}
+    region: ${MEDLOCKER_MINIO_REGION:}
+    create-bucket: ${MEDLOCKER_MINIO_CREATE_BUCKET:true}
   master-key: ${MEDLOCKER_MASTER_KEY}
   jwt-secret: ${MEDLOCKER_JWT_SECRET}
   pin-pepper: ${MEDLOCKER_PIN_PEPPER}

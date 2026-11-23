@@ -48,3 +48,24 @@ docker compose --env-file .env.production -f docker-compose.production.yml up -d
 ```
 
 Keep environment secrets out of Git. Back up PostgreSQL and MinIO together, and protect the matching master key so backed-up files can be decrypted after a restore.
+
+## Host a demo on free tiers
+
+The Render Blueprint runs the Java app on Render. Use a free Neon PostgreSQL project for persistent metadata and a private Backblaze B2 bucket for encrypted files. The app and database can sleep on their free plans, so the first request may take longer. Use sample records on this deployment.
+
+1. Create a [Neon Free](https://neon.com/pricing) PostgreSQL project. From **Connect**, note the database hostname, database name, role, and password.
+2. Create a [Backblaze B2 account](https://www.backblaze.com/sign-up/s3) and a private bucket. Create a read/write application key restricted to that bucket, with **Allow List All Bucket Names** enabled for the startup bucket check. Set the bucket lifecycle to **Keep only the last version** so hidden versions are cleaned up. [Application keys](https://www.backblaze.com/docs/cloud-storage-s3-compatible-app-keys) · [Lifecycle rules](https://www.backblaze.com/docs/cloud-storage-lifecycle-rules)
+3. In Render, choose **New → Blueprint** and select this GitHub repository. Enter the values below in Render's dashboard. [Render Blueprint setup](https://render.com/docs/infrastructure-as-code)
+
+| Render variable | Value |
+| --- | --- |
+| `MEDLOCKER_DATABASE_URL` | `jdbc:postgresql://NEON_HOST:5432/NEON_DATABASE?sslmode=verify-full&sslfactory=org.postgresql.ssl.DefaultJavaSSLFactory` |
+| `POSTGRES_USER` | Neon role |
+| `POSTGRES_PASSWORD` | Neon role password |
+| `MEDLOCKER_MINIO_ENDPOINT` | B2 S3 endpoint including `https://`, without the bucket name |
+| `MEDLOCKER_MINIO_REGION` | The region shown in the B2 endpoint, such as `us-west-004` |
+| `MEDLOCKER_MINIO_BUCKET` | Private B2 bucket name |
+| `MINIO_ROOT_USER` | B2 application key ID |
+| `MINIO_ROOT_PASSWORD` | B2 application key |
+
+Render generates the encryption key, JWT secret, PIN pepper, and doctor invite code on first setup. Preserve the master key if you keep the database and bucket. Check the HTTPS link assigned by Render and test patient registration, a PDF upload, and doctor PIN access. Free Render web services block the SMTP ports used by the current email reset feature. Regular password sign-in works without SMTP. [Render free-tier limits](https://render.com/docs/free)
